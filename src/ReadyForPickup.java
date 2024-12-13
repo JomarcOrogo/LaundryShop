@@ -2,6 +2,8 @@ import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Vector;
 
 public class ReadyForPickup {
@@ -16,7 +18,7 @@ public class ReadyForPickup {
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
 
-        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price"};
+        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -32,11 +34,15 @@ public class ReadyForPickup {
         JScrollPane scrollPane = new JScrollPane(table);
         frame.add(scrollPane, BorderLayout.CENTER);
 
-        JButton sortButton = new JButton("Sort by Price");
-        sortButton.addActionListener(e -> sortTableByColumn(4));
+        JButton sortButton = new JButton("Sort");
+        sortButton.addActionListener(e -> showSortOptions());
+
+        JButton pickUpButton = new JButton("Picked Up");
+        pickUpButton.addActionListener(e -> markAsPickedUp());
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(sortButton);
+        bottomPanel.add(pickUpButton);
 
         frame.add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -52,7 +58,41 @@ public class ReadyForPickup {
         row.add(order.getPackageType());
         row.add(order.getWeight());
         row.add(String.format("₱%.2f", order.getPrice()));
+        row.add("");  // Column for Picked Up At time (initially empty)
         tableModel.addRow(row);
+    }
+
+    private void markAsPickedUp() {
+        int rowIndex = table.getSelectedRow();
+        if (rowIndex == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select an order to mark as picked up.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
+
+        // Get the current time and format it
+        String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column
+
+        JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    private void showSortOptions() {
+        String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
+        String selectedOption = (String) JOptionPane.showInputDialog(frame, "Choose sorting option:", "Sort Orders", JOptionPane.QUESTION_MESSAGE, null, sortOptions, sortOptions[0]);
+
+        if (selectedOption == null) return;
+
+        switch (selectedOption) {
+            case "Sort by Package Type":
+                sortTableByColumn(2); // Package Type column
+                break;
+            case "Sort by Client Name":
+                sortTableByColumn(1); // Client Name column
+                break;
+            case "Sort by Price":
+                sortTableByColumn(4); // Price column
+                break;
+        }
     }
 
     private void sortTableByColumn(int columnIndex) {
