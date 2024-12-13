@@ -18,7 +18,7 @@ public class ReadyForPickup {
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
 
-        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"};
+        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"}; // Ensure 6 columns
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -47,20 +47,22 @@ public class ReadyForPickup {
         frame.add(bottomPanel, BorderLayout.SOUTH);
     }
 
+
     public void showWindow() {
         frame.setVisible(true);
     }
 
     public void addOrder(LaundryOrder order) {
         Vector<Object> row = new Vector<>();
-        row.add(false);
-        row.add(order.getCustomerName());
-        row.add(order.getPackageType());
-        row.add(order.getWeight());
-        row.add(String.format("₱%.2f", order.getPrice()));
-        row.add("");  // Column for Picked Up At time (initially empty)
+        row.add(false);  // Select checkbox
+        row.add(order.getCustomerName());  // Name
+        row.add(order.getPackageType());  // Package Type
+        row.add(order.getWeight());  // Weight
+        row.add(String.format("₱%.2f", order.getPrice()));  // Price
+        row.add("");  // Column for "Picked Up At" (initially empty)
         tableModel.addRow(row);
     }
+
 
     private void markAsPickedUp() {
         int rowIndex = table.getSelectedRow();
@@ -77,7 +79,7 @@ public class ReadyForPickup {
 
         // Get the current time and format it
         String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column
+        tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column (index 5)
 
         // Notify the user
         JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
@@ -85,6 +87,7 @@ public class ReadyForPickup {
         // Remove the order from the list
         tableModel.removeRow(rowIndex);
     }
+
 
     private void showSortOptions() {
         String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
