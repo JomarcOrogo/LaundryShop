@@ -11,6 +11,7 @@ public class LaundryShopSystem {
     private JTextArea queueDisplay;
     private Queue<LaundryOrder> laundryQueue;
     private Queue<LaundryOrder> readyForPickupQueue;
+    private JTextField contactField;  // New field for contact number
 
     public LaundryShopSystem() {
         laundryQueue = new LinkedList<>();
@@ -25,12 +26,18 @@ public class LaundryShopSystem {
         frame.setLayout(new BorderLayout());
         frame.setLocationRelativeTo(null);
 
-        JPanel topPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel topPanel = new JPanel(new GridLayout(5, 2, 5, 5)); // Adjusted the layout to accommodate the new row
         topPanel.setBorder(BorderFactory.createTitledBorder("Add Laundry Order"));
+
         JLabel nameLabel = new JLabel("Customer Name:");
         customerNameField = new JTextField();
+
+        JLabel contactLabel = new JLabel("Contact Number:"); // New label for contact number
+        contactField = new JTextField(); // New text field for contact number
+
         JLabel packageLabel = new JLabel("Package Type:");
         packageTypeDropdown = new JComboBox<>(new String[]{"Basic Package", "Premium Package"});
+
         JLabel weightLabel = new JLabel("Laundry Weight (kg):");
         laundryWeightField = new JTextField();
 
@@ -39,6 +46,8 @@ public class LaundryShopSystem {
 
         topPanel.add(nameLabel);
         topPanel.add(customerNameField);
+        topPanel.add(contactLabel); // Add contact label
+        topPanel.add(contactField); // Add contact field
         topPanel.add(packageLabel);
         topPanel.add(packageTypeDropdown);
         topPanel.add(weightLabel);
@@ -87,6 +96,10 @@ public class LaundryShopSystem {
         frame.setVisible(true);
     }
 
+    public JTextField getContactField() {
+        return contactField; // Getter method for contact field
+    }
+
     public void updateQueueDisplay() {
         StringBuilder display = new StringBuilder();
         for (LaundryOrder order : laundryQueue) {
@@ -119,7 +132,14 @@ public class LaundryShopSystem {
         return readyForPickupQueue;
     }
 
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        // Regex for Philippine phone numbers (local or international)
+        String regex = "^((\\+63)|(0))9[0-9]{9}$";
+        return phoneNumber.matches(regex);
+    }
+
     public static void main(String[] args) {
         new LaundryShopSystem();
     }
 }
+
