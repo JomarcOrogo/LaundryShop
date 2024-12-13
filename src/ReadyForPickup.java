@@ -11,14 +11,16 @@ public class ReadyForPickup {
     private JTable table;
     private DefaultTableModel tableModel;
     private TableRowSorter<DefaultTableModel> rowSorter;
+    private ArrayList<LaundryOrder> orders;
 
     public ReadyForPickup() {
+        orders = new ArrayList<>(); // Initialize orders list
         frame = new JFrame("Ready for Pickup");
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
         frame.setSize(600, 400);
         frame.setLocationRelativeTo(null);
 
-        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"}; // Ensure 6 columns
+        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"};
         tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public Class<?> getColumnClass(int columnIndex) {
@@ -60,6 +62,7 @@ public class ReadyForPickup {
         row.add(String.format("₱%.2f", order.getPrice()));  // Price
         row.add("");  // Column for "Picked Up At" (initially empty)
         tableModel.addRow(row.toArray()); // Convert ArrayList to array and add to table model
+        orders.add(order);  // Add the order to the list
     }
 
     private void markAsPickedUp() {
@@ -74,13 +77,26 @@ public class ReadyForPickup {
             return;
         }
 
-        String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column (index 5)
+        // Get the LaundryOrder from the table
+        LaundryOrder completedOrder = orders.get(rowIndex);
 
-        JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
+        // Notify LaundryShopSystem to remove the order from the relevant queues
+        LaundryShopSystem system = new LaundryShopSystem(); // Ensure you have access to the main system
+        system.removeOrderFromQueues(completedOrder); // Custom method to remove the order from the queues
 
+        // Remove the order from the ReadyForPickup list and the table model
+        orders.remove(completedOrder);
         tableModel.removeRow(rowIndex);
+
+        // Explicitly refresh the table and clear selections
+        ((DefaultTableModel) table.getModel()).fireTableDataChanged();
+        table.clearSelection();
+
+        // Notify the user
+        JOptionPane.showMessageDialog(frame, "Order marked as picked up and removed from the list.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
     }
+
+
 
     private void showSortOptions() {
         String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
@@ -105,3 +121,4 @@ public class ReadyForPickup {
         rowSorter.toggleSortOrder(columnIndex);
     }
 }
+

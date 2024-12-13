@@ -100,6 +100,20 @@ public class LaundryShopSystem {
         return contactField; // Getter method for contact field
     }
 
+    public void removeOrderFromQueues(LaundryOrder order) {
+        // Remove from LaundryQueue if present
+        if (laundryQueue.contains(order)) {
+            laundryQueue.remove(order);
+        }
+        // Remove from ReadyForPickupQueue if present
+        if (readyForPickupQueue.contains(order)) {
+            readyForPickupQueue.remove(order);
+        }
+        updateQueueDisplay(); // Refresh the display after removal
+    }
+
+
+
     public void updateQueueDisplay() {
         StringBuilder display = new StringBuilder();
         for (LaundryOrder order : laundryQueue) {
