@@ -3,8 +3,8 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableRowSorter;
 import java.awt.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Vector;
 
 public class ReadyForPickup {
     private JFrame frame;
@@ -47,22 +47,20 @@ public class ReadyForPickup {
         frame.add(bottomPanel, BorderLayout.SOUTH);
     }
 
-
     public void showWindow() {
         frame.setVisible(true);
     }
 
     public void addOrder(LaundryOrder order) {
-        Vector<Object> row = new Vector<>();
+        ArrayList<Object> row = new ArrayList<>();
         row.add(false);  // Select checkbox
         row.add(order.getCustomerName());  // Name
         row.add(order.getPackageType());  // Package Type
         row.add(order.getWeight());  // Weight
         row.add(String.format("₱%.2f", order.getPrice()));  // Price
         row.add("");  // Column for "Picked Up At" (initially empty)
-        tableModel.addRow(row);
+        tableModel.addRow(row.toArray()); // Convert ArrayList to array and add to table model
     }
-
 
     private void markAsPickedUp() {
         int rowIndex = table.getSelectedRow();
@@ -71,23 +69,18 @@ public class ReadyForPickup {
             return;
         }
 
-        // Confirm with the user before marking the order as picked up
         int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure this order has been picked up?", "Confirm Pickup", JOptionPane.YES_NO_OPTION);
         if (confirm != JOptionPane.YES_OPTION) {
             return;
         }
 
-        // Get the current time and format it
         String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column (index 5)
 
-        // Notify the user
         JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
 
-        // Remove the order from the list
         tableModel.removeRow(rowIndex);
     }
-
 
     private void showSortOptions() {
         String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
