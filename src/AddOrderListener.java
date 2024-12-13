@@ -22,7 +22,8 @@ public class AddOrderListener implements ActionListener {
 
         try {
             double weight = Double.parseDouble(weightText);
-            LaundryOrder order = new LaundryOrder(customerName, packageType, weight);
+            double price = PriceCalculator.calculatePrice(packageType, weight);
+            LaundryOrder order = new LaundryOrder(customerName, packageType, weight, price);
             system.getLaundryQueue().add(order);
             system.updateQueueDisplay();
             system.getCustomerNameField().setText("");

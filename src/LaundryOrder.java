@@ -2,11 +2,13 @@ public class LaundryOrder {
     private String customerName;
     private String packageType;
     private double weight;
+    private double price;
 
-    public LaundryOrder(String customerName, String packageType, double weight) {
+    public LaundryOrder(String customerName, String packageType, double weight, double price) {
         this.customerName = customerName;
         this.packageType = packageType;
         this.weight = weight;
+        this.price = price;
     }
 
     public String getCustomerName() {
@@ -21,8 +23,12 @@ public class LaundryOrder {
         return weight;
     }
 
+    public double getPrice() {
+        return price;
+    }
+
     @Override
     public String toString() {
-        return "Customer: " + customerName + ", Package: " + packageType + ", Weight: " + weight + " kg";
+        return "Customer: " + customerName + ", Package: " + packageType + ", Weight: " + weight + " kg, Price: ₱" + price;
     }
 }

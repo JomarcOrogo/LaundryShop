@@ -10,22 +10,21 @@ public class LaundryShopSystem {
     private JComboBox<String> packageTypeDropdown;
     private JTextArea queueDisplay;
     private Queue<LaundryOrder> laundryQueue;
+    private Queue<LaundryOrder> readyForPickupQueue;
 
     public LaundryShopSystem() {
         laundryQueue = new LinkedList<>();
+        readyForPickupQueue = new LinkedList<>();
         initializeGUI();
     }
 
     private void initializeGUI() {
         frame = new JFrame("Laundry Shop System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 600);
+        frame.setSize(750, 750);
         frame.setLayout(new BorderLayout());
-
-        // Center GUI on the screen
         frame.setLocationRelativeTo(null);
 
-        // Top panel for adding orders
         JPanel topPanel = new JPanel(new GridLayout(4, 2, 5, 5));
         topPanel.setBorder(BorderFactory.createTitledBorder("Add Laundry Order"));
         JLabel nameLabel = new JLabel("Customer Name:");
@@ -46,7 +45,6 @@ public class LaundryShopSystem {
         topPanel.add(laundryWeightField);
         topPanel.add(addOrderButton);
 
-        // Center panel for displaying queue
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBorder(BorderFactory.createTitledBorder("Order Queue"));
         queueDisplay = new JTextArea();
@@ -55,22 +53,29 @@ public class LaundryShopSystem {
 
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Bottom panel for dequeue action and legend
         JPanel bottomPanel = new JPanel(new GridLayout(2, 1));
 
-        // Legend for package types
         JPanel legendPanel = new JPanel(new GridLayout(2, 1));
         legendPanel.setBorder(BorderFactory.createTitledBorder("Package Legend"));
-        JLabel basicPackageLabel = new JLabel("Basic Package: Wash, Hang Dry, Fabric Softener");
-        JLabel premiumPackageLabel = new JLabel("Premium Package: Wash, Air Dry, Fabric Softener");
+        JLabel basicPackageLabel = new JLabel("Basic Package: Wash, Hang Dry, Fabric Softener, 7kg base weight (₱150), ₱15/kg extra");
+        JLabel premiumPackageLabel = new JLabel("Premium Package: Wash, Air Dry, Fabric Softener, 9kg base weight (₱200), ₱15/kg extra");
         legendPanel.add(basicPackageLabel);
         legendPanel.add(premiumPackageLabel);
 
-        // Dequeue action
         JPanel actionPanel = new JPanel();
         JButton completeOrderButton = new JButton("Complete Order");
         completeOrderButton.addActionListener(new CompleteOrderListener(this));
+        JButton readyForPickupButton = new JButton("Ready for Pickup");
+        readyForPickupButton.addActionListener(e -> {
+            ReadyForPickup window = new ReadyForPickup();
+            for (LaundryOrder order : readyForPickupQueue) {
+                window.addOrder(order);
+            }
+            window.showWindow();
+        });
+
         actionPanel.add(completeOrderButton);
+        actionPanel.add(readyForPickupButton);
 
         bottomPanel.add(legendPanel);
         bottomPanel.add(actionPanel);
@@ -108,6 +113,10 @@ public class LaundryShopSystem {
 
     public Queue<LaundryOrder> getLaundryQueue() {
         return laundryQueue;
+    }
+
+    public Queue<LaundryOrder> getReadyForPickupQueue() {
+        return readyForPickupQueue;
     }
 
     public static void main(String[] args) {
