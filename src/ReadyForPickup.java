@@ -39,12 +39,16 @@ public class ReadyForPickup {
         JButton sortButton = new JButton("Sort");
         sortButton.addActionListener(e -> showSortOptions());
 
-        JButton pickUpButton = new JButton("Picked Up");
+        JButton pickUpButton = new JButton("Mark as Picked Up");
         pickUpButton.addActionListener(e -> markAsPickedUp());
+
+        JButton removeButton = new JButton("Remove Order");
+        removeButton.addActionListener(e -> removeOrder());
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(sortButton);
         bottomPanel.add(pickUpButton);
+        bottomPanel.add(removeButton);
 
         frame.add(bottomPanel, BorderLayout.SOUTH);
     }
@@ -80,23 +84,41 @@ public class ReadyForPickup {
         // Get the LaundryOrder from the table
         LaundryOrder completedOrder = orders.get(rowIndex);
 
+        // Add current date and time to "Picked Up At" column
+        String pickedUpAt = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+        tableModel.setValueAt(pickedUpAt, rowIndex, 5);  // Set the "Picked Up At" column value
+
         // Notify LaundryShopSystem to remove the order from the relevant queues
         LaundryShopSystem system = new LaundryShopSystem(); // Ensure you have access to the main system
         system.removeOrderFromQueues(completedOrder); // Custom method to remove the order from the queues
 
-        // Remove the order from the ReadyForPickup list and the table model
-        orders.remove(completedOrder);
-        tableModel.removeRow(rowIndex);
-
-        // Explicitly refresh the table and clear selections
-        ((DefaultTableModel) table.getModel()).fireTableDataChanged();
-        table.clearSelection();
-
-        // Notify the user
-        JOptionPane.showMessageDialog(frame, "Order marked as picked up and removed from the list.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
+        JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
     }
 
+    private void removeOrder() {
+        int rowIndex = table.getSelectedRow();
+        if (rowIndex == -1) {
+            JOptionPane.showMessageDialog(frame, "Please select an order to remove.", "Error", JOptionPane.ERROR_MESSAGE);
+            return;
+        }
 
+        int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure you want to remove this order?", "Confirm Removal", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        // Get the LaundryOrder from the table
+        LaundryOrder orderToRemove = orders.get(rowIndex);
+
+        // Remove the order from the orders list and the table model
+        orders.remove(orderToRemove);
+        tableModel.removeRow(rowIndex);
+
+        // Explicitly refresh the table
+        ((DefaultTableModel) table.getModel()).fireTableDataChanged();
+
+        JOptionPane.showMessageDialog(frame, "Order removed from the list.", "Order Removed", JOptionPane.INFORMATION_MESSAGE);
+    }
 
     private void showSortOptions() {
         String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
@@ -121,4 +143,3 @@ public class ReadyForPickup {
         rowSorter.toggleSortOrder(columnIndex);
     }
 }
-
