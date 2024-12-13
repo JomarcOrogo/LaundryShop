@@ -10,28 +10,34 @@ public class LaundryShopSystem {
     private JComboBox<String> packageTypeDropdown;
     private JTextArea queueDisplay;
     private Queue<LaundryOrder> laundryQueue;
+    private Queue<LaundryOrder> readyForPickupQueue;
+    private JTextField contactField;  // New field for contact number
 
     public LaundryShopSystem() {
         laundryQueue = new LinkedList<>();
+        readyForPickupQueue = new LinkedList<>();
         initializeGUI();
     }
 
     private void initializeGUI() {
         frame = new JFrame("Laundry Shop System");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        frame.setSize(500, 600);
+        frame.setSize(750, 750);
         frame.setLayout(new BorderLayout());
-
-        // Center GUI on the screen
         frame.setLocationRelativeTo(null);
 
-        // Top panel for adding orders
-        JPanel topPanel = new JPanel(new GridLayout(4, 2, 5, 5));
+        JPanel topPanel = new JPanel(new GridLayout(5, 2, 5, 5)); // Adjusted the layout to accommodate the new row
         topPanel.setBorder(BorderFactory.createTitledBorder("Add Laundry Order"));
+
         JLabel nameLabel = new JLabel("Customer Name:");
         customerNameField = new JTextField();
+
+        JLabel contactLabel = new JLabel("Contact Number:"); // New label for contact number
+        contactField = new JTextField(); // New text field for contact number
+
         JLabel packageLabel = new JLabel("Package Type:");
         packageTypeDropdown = new JComboBox<>(new String[]{"Basic Package", "Premium Package"});
+
         JLabel weightLabel = new JLabel("Laundry Weight (kg):");
         laundryWeightField = new JTextField();
 
@@ -40,13 +46,14 @@ public class LaundryShopSystem {
 
         topPanel.add(nameLabel);
         topPanel.add(customerNameField);
+        topPanel.add(contactLabel); // Add contact label
+        topPanel.add(contactField); // Add contact field
         topPanel.add(packageLabel);
         topPanel.add(packageTypeDropdown);
         topPanel.add(weightLabel);
         topPanel.add(laundryWeightField);
         topPanel.add(addOrderButton);
 
-        // Center panel for displaying queue
         JPanel centerPanel = new JPanel(new BorderLayout());
         centerPanel.setBorder(BorderFactory.createTitledBorder("Order Queue"));
         queueDisplay = new JTextArea();
@@ -55,22 +62,29 @@ public class LaundryShopSystem {
 
         centerPanel.add(scrollPane, BorderLayout.CENTER);
 
-        // Bottom panel for dequeue action and legend
         JPanel bottomPanel = new JPanel(new GridLayout(2, 1));
 
-        // Legend for package types
         JPanel legendPanel = new JPanel(new GridLayout(2, 1));
         legendPanel.setBorder(BorderFactory.createTitledBorder("Package Legend"));
-        JLabel basicPackageLabel = new JLabel("Basic Package: Wash, Hang Dry, Fabric Softener");
-        JLabel premiumPackageLabel = new JLabel("Premium Package: Wash, Air Dry, Fabric Softener");
+        JLabel basicPackageLabel = new JLabel("Basic Package: Wash, Hang Dry, Fabric Softener, 7kg base weight (₱150), ₱15/kg extra");
+        JLabel premiumPackageLabel = new JLabel("Premium Package: Wash, Air Dry, Fabric Softener, 9kg base weight (₱200), ₱15/kg extra");
         legendPanel.add(basicPackageLabel);
         legendPanel.add(premiumPackageLabel);
 
-        // Dequeue action
         JPanel actionPanel = new JPanel();
         JButton completeOrderButton = new JButton("Complete Order");
         completeOrderButton.addActionListener(new CompleteOrderListener(this));
+        JButton readyForPickupButton = new JButton("Ready for Pickup");
+        readyForPickupButton.addActionListener(e -> {
+            ReadyForPickup window = new ReadyForPickup();
+            for (LaundryOrder order : readyForPickupQueue) {
+                window.addOrder(order);
+            }
+            window.showWindow();
+        });
+
         actionPanel.add(completeOrderButton);
+        actionPanel.add(readyForPickupButton);
 
         bottomPanel.add(legendPanel);
         bottomPanel.add(actionPanel);
@@ -81,6 +95,24 @@ public class LaundryShopSystem {
 
         frame.setVisible(true);
     }
+
+    public JTextField getContactField() {
+        return contactField; // Getter method for contact field
+    }
+
+    public void removeOrderFromQueues(LaundryOrder order) {
+        // Remove from LaundryQueue if present
+        if (laundryQueue.contains(order)) {
+            laundryQueue.remove(order);
+        }
+        // Remove from ReadyForPickupQueue if present
+        if (readyForPickupQueue.contains(order)) {
+            readyForPickupQueue.remove(order);
+        }
+        updateQueueDisplay(); // Refresh the display after removal
+    }
+
+
 
     public void updateQueueDisplay() {
         StringBuilder display = new StringBuilder();
@@ -110,7 +142,18 @@ public class LaundryShopSystem {
         return laundryQueue;
     }
 
+    public Queue<LaundryOrder> getReadyForPickupQueue() {
+        return readyForPickupQueue;
+    }
+
+    public static boolean isValidPhoneNumber(String phoneNumber) {
+        // Regex for Philippine phone numbers (local or international)
+        String regex = "^((\\+63)|(0))9[0-9]{9}$";
+        return phoneNumber.matches(regex);
+    }
+
     public static void main(String[] args) {
         new LaundryShopSystem();
     }
 }
+

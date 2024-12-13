@@ -15,6 +15,7 @@ public class CompleteOrderListener implements ActionListener {
             JOptionPane.showMessageDialog(system.getFrame(), "No orders in the queue.", "Queue Empty", JOptionPane.INFORMATION_MESSAGE);
         } else {
             LaundryOrder completedOrder = system.getLaundryQueue().poll();
+            system.getReadyForPickupQueue().add(completedOrder);
             system.updateQueueDisplay();
             JOptionPane.showMessageDialog(system.getFrame(), "Order completed for: " + completedOrder.getCustomerName(), "Order Completed", JOptionPane.INFORMATION_MESSAGE);
         }
