@@ -1,50 +1,41 @@
 import javax.swing.*;
-import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableRowSorter;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.Vector;
 
 public class ReadyForPickup {
     private JFrame frame;
-    private JTable table;
-    private DefaultTableModel tableModel;
-    private TableRowSorter<DefaultTableModel> rowSorter;
+    private ReadyForPickupPanel panel;
+    private int orderNumber;
 
     public ReadyForPickup() {
         frame = new JFrame("Ready for Pickup");
         frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
-        frame.setSize(600, 400);
+        frame.setSize(650, 650);
         frame.setLocationRelativeTo(null);
 
-        String[] columnNames = {"Select", "Name", "Package", "Weight", "Price", "Picked Up At"};
-        tableModel = new DefaultTableModel(columnNames, 0) {
-            @Override
-            public Class<?> getColumnClass(int columnIndex) {
-                if (columnIndex == 0) return Boolean.class;
-                return String.class;
-            }
-        };
-
-        table = new JTable(tableModel);
-        rowSorter = new TableRowSorter<>(tableModel);
-        table.setRowSorter(rowSorter);
-
-        JScrollPane scrollPane = new JScrollPane(table);
-        frame.add(scrollPane, BorderLayout.CENTER);
+        panel = new ReadyForPickupPanel();
+        frame.add(panel, BorderLayout.CENTER);
 
         JButton sortButton = new JButton("Sort");
         sortButton.addActionListener(e -> showSortOptions());
 
         JButton pickUpButton = new JButton("Picked Up");
-        pickUpButton.addActionListener(e -> markAsPickedUp());
+        pickUpButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                markAsPickedUp();
+            }
+        });
 
         JPanel bottomPanel = new JPanel();
         bottomPanel.add(sortButton);
         bottomPanel.add(pickUpButton);
 
         frame.add(bottomPanel, BorderLayout.SOUTH);
+        orderNumber = 1; // Initialize order number
     }
 
     public void showWindow() {
@@ -52,18 +43,11 @@ public class ReadyForPickup {
     }
 
     public void addOrder(LaundryOrder order) {
-        Vector<Object> row = new Vector<>();
-        row.add(false);
-        row.add(order.getCustomerName());
-        row.add(order.getPackageType());
-        row.add(order.getWeight());
-        row.add(String.format("₱%.2f", order.getPrice()));
-        row.add("");  // Column for Picked Up At time (initially empty)
-        tableModel.addRow(row);
+        panel.addOrder(order, orderNumber++);
     }
 
     private void markAsPickedUp() {
-        int rowIndex = table.getSelectedRow();
+        int rowIndex = panel.getTable().getSelectedRow();
         if (rowIndex == -1) {
             JOptionPane.showMessageDialog(frame, "Please select an order to mark as picked up.", "Error", JOptionPane.ERROR_MESSAGE);
             return;
@@ -71,7 +55,7 @@ public class ReadyForPickup {
 
         // Get the current time and format it
         String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-        tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column
+        panel.getTable().setValueAt(pickedUpTime, rowIndex, 6); // Update the "Picked Up At" column
 
         JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
     }
@@ -84,18 +68,14 @@ public class ReadyForPickup {
 
         switch (selectedOption) {
             case "Sort by Package Type":
-                sortTableByColumn(2); // Package Type column
+                panel.sortTableByColumn(3); // Package Type column
                 break;
             case "Sort by Client Name":
-                sortTableByColumn(1); // Client Name column
+                panel.sortTableByColumn(2); // Client Name column
                 break;
             case "Sort by Price":
-                sortTableByColumn(4); // Price column
+                panel.sortTableByColumn(5); // Price column
                 break;
         }
-    }
-
-    private void sortTableByColumn(int columnIndex) {
-        rowSorter.toggleSortOrder(columnIndex);
     }
 }
