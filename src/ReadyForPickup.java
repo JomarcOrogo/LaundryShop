@@ -69,11 +69,21 @@ public class ReadyForPickup {
             return;
         }
 
+        // Confirm with the user before marking the order as picked up
+        int confirm = JOptionPane.showConfirmDialog(frame, "Are you sure this order has been picked up?", "Confirm Pickup", JOptionPane.YES_NO_OPTION);
+        if (confirm != JOptionPane.YES_OPTION) {
+            return;
+        }
+
         // Get the current time and format it
         String pickedUpTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
         tableModel.setValueAt(pickedUpTime, rowIndex, 5); // Update the "Picked Up At" column
 
+        // Notify the user
         JOptionPane.showMessageDialog(frame, "Order marked as picked up.", "Order Picked Up", JOptionPane.INFORMATION_MESSAGE);
+
+        // Remove the order from the list
+        tableModel.removeRow(rowIndex);
     }
 
     private void showSortOptions() {
