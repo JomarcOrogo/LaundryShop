@@ -61,8 +61,16 @@ public class ReadyForPickup {
     }
 
     private void showSortOptions() {
-        String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price"};
-        String selectedOption = (String) JOptionPane.showInputDialog(frame, "Choose sorting option:", "Sort Orders", JOptionPane.QUESTION_MESSAGE, null, sortOptions, sortOptions[0]);
+        String[] sortOptions = {"Sort by Package Type", "Sort by Client Name", "Sort by Price", "Sort by Order Number"};
+        String selectedOption = (String) JOptionPane.showInputDialog(
+                frame,
+                "Choose sorting option:",
+                "Sort Orders",
+                JOptionPane.QUESTION_MESSAGE,
+                null,
+                sortOptions,
+                sortOptions[0]
+        );
 
         if (selectedOption == null) return;
 
@@ -75,6 +83,9 @@ public class ReadyForPickup {
                 break;
             case "Sort by Price":
                 panel.sortTableByColumn(5); // Price column
+                break;
+            case "Sort by Order Number":
+                panel.sortTableByColumn(1); // Order Number column
                 break;
         }
     }
