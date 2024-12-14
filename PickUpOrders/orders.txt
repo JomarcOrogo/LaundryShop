@@ -1,0 +1,4 @@
+Order No: 1, Customer: Jomarc, Package: Basic Package, Weight: 14.00kg, Price: ₱255.00, Picked Up At: 2024-12-14 09:43:32
+Order No: 2, Customer: Kent, Package: Premium Package, Weight: 15.00kg, Price: ₱290.00, Picked Up At: 2024-12-14 09:43:36
+Order No: 4, Customer: Mike, Package: Basic Package, Weight: 7.00kg, Price: ₱150.00, Picked Up At: 2024-12-14 09:43:38
+Order No: 3, Customer: Rk, Package: Premium Package, Weight: 9.00kg, Price: ₱200.00, Picked Up At: 2024-12-14 09:43:58
