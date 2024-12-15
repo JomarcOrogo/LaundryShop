@@ -2,6 +2,9 @@ import javax.swing.*;
 import java.awt.*;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 
 public class LaundryShopSystem {
     private JFrame frame;
@@ -134,8 +137,7 @@ public class LaundryShopSystem {
 
     public static boolean isValidPhoneNumber(String phoneNumber) {
         // Regex for Philippine phone numbers (local or international)
-        String regex = "^((\\+63)|(0))9[0-9]{9}$";
-        return phoneNumber.matches(regex);
+        return phoneNumber.matches("^((\\+63)|(0))9[0-9]{9}$");
     }
 
     public static void main(String[] args) {
